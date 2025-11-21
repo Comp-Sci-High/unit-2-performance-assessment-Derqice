@@ -4,6 +4,9 @@ const apiKey = process.env.apiKey1
 
 let requestURL="https://api.openai.com/v1/responses"
 let question= prompt("Hello what do you want?:")
+let id;
+let message;
+let converse;
 async function gptAPI(gptdata){
     let options={
         method:"POST",
@@ -18,14 +21,59 @@ async function gptAPI(gptdata){
     }
     let response= await fetch(requestURL, options)
     let data= await response.json()
-    // console.log(data)
-    console.log(data.output[0].content[0].text)
+
+    message=data.output[0].content[0].text
+     id= data.id
 }
 
-gptAPI({
+
+
+
+async function conversation(gptdata){
+let options={
+        method:"POST",
+        headers:{
+        Authorization:"Bearer "+apiKey,
+        "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            model:"gpt-5.1",
+            input:"",
+            previous_response_id:id
+
+        })
+    }
+    let response= await fetch(requestURL, options)
+    let data= await response.json()
+
+ message=data.output[0].content[0].text
+    id=data.id
+    converse=prompt("Do you want to end to convo(y/n)")  
+  
+}
+
+
+
+async function run(){
+    await  gptAPI({
     model:"gpt-5.1",
     input:question
+    
 })
+while(converse!="y"){
+ await  conversation({
+    model:"gpt-5.1",
+    input:prompt(message),
+    previous_response_id:id
+
+})
+
+}
+
+}
+
+run()
+
 // run your code with node chatgpt.js
 // add your apiKey to .env from gChat
 // Follow the checklist on the Performance Assessment Google Doc
