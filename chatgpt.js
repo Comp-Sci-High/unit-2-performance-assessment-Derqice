@@ -30,6 +30,7 @@ async function gptAPI(gptdata){
 
 
 async function conversation(gptdata){
+    let nQuestion=prompt(message)
 let options={
         method:"POST",
         headers:{
@@ -38,14 +39,14 @@ let options={
         },
         body:JSON.stringify({
             model:"gpt-5.1",
-            input:"",
+            input: nQuestion,
             previous_response_id:id
 
         })
     }
     let response= await fetch(requestURL, options)
     let data= await response.json()
-
+// console.log(data)
  message=data.output[0].content[0].text
     id=data.id
     converse=prompt("Do you want to end to convo(y/n)")  
@@ -61,10 +62,11 @@ async function run(){
     
 })
 while(converse!="y"){
+  
  await  conversation({
     model:"gpt-5.1",
-    input:prompt(message),
-    previous_response_id:id
+   previous_response_id:id
+
 
 })
 
